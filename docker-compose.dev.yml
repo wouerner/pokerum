@@ -1,0 +1,48 @@
+# Desenvolvimento: docker compose -f docker-compose.dev.yml up --build
+#   frontend (HMR) → http://localhost:5173   api → http://localhost:8080
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.dev.Dockerfile
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      DATABASE_URL: sqlite:///data/pokerum-dev.db?mode=rwc
+      POKERUM_SEED: "1"
+      POKERUM_WEB_DIST: /nonexistent   # em dev a SPA é servida pelo Vite
+      RUST_LOG: debug,hyper=info,sqlx=warn
+      CARGO_TARGET_DIR: /cargo-target
+    volumes:
+      - ./backend:/app/backend
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-target:/cargo-target
+      - dev-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 60
+      start_period: 30s
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.dev.Dockerfile
+    ports:
+      - "${WEB_PORT:-5173}:${WEB_PORT:-5173}"
+    environment:
+      VITE_HOST: 0.0.0.0
+      VITE_PORT: ${WEB_PORT:-5173}   # mesma porta dentro e fora: o log do Vite mostra a URL certa
+      VITE_API_TARGET: http://api:8080
+    volumes:
+      - ./web:/app/web
+      - web-node-modules:/app/web/node_modules   # não mistura node_modules do host
+    depends_on:
+      - api
+
+volumes:
+  cargo-registry:
+  cargo-target:
+  web-node-modules:
+  dev-data:

@@ -1,0 +1,108 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-12T15:30:00Z"
+  },
+  "title": "Pokerum Cozy Pixel",
+  "namespace": "PokerumDS",
+  "libraries": [],
+  "sections": {},
+  "groups": [
+    "Illustrations",
+    "Glyphs"
+  ],
+  "assetGroups": {
+    "Illustrations": {
+      "name": "Illustrations",
+      "tile": "m",
+      "order": [
+        "pokerum-mark.svg",
+        "floppy.svg",
+        "plant.svg",
+        "mug.svg",
+        "404.svg"
+      ],
+      "files": {
+        "pokerum-mark.svg": {
+          "name": "pokerum-mark.svg",
+          "blob": "9762a00d90f4c56abae014022aafc2ba",
+          "size": 4385,
+          "type": "image/svg+xml"
+        },
+        "floppy.svg": {
+          "name": "floppy.svg",
+          "blob": "c2e8c9f7176e4548f54fc739d4b96adf",
+          "size": 4201,
+          "type": "image/svg+xml"
+        },
+        "plant.svg": {
+          "name": "plant.svg",
+          "blob": "dfa2d2aa3567d1e9306928b17724d532",
+          "size": 3010,
+          "type": "image/svg+xml"
+        },
+        "mug.svg": {
+          "name": "mug.svg",
+          "blob": "b2d0243172b5c4d4ff927ddecc30ef1f",
+          "size": 2215,
+          "type": "image/svg+xml"
+        },
+        "404.svg": {
+          "name": "404.svg",
+          "blob": "a8de655b1ed2377057742ec67c3214ce",
+          "size": 3316,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Glyphs": {
+      "name": "Glyphs",
+      "tile": "s",
+      "order": [
+        "cursor.svg",
+        "down.svg",
+        "check.svg",
+        "cross.svg"
+      ],
+      "files": {
+        "cursor.svg": {
+          "name": "cursor.svg",
+          "blob": "387963a3a0b5d84e86538b8e251e5dcb",
+          "size": 315,
+          "type": "image/svg+xml"
+        },
+        "down.svg": {
+          "name": "down.svg",
+          "blob": "0eca753b82e48f257d1c393eb9e850ca",
+          "size": 315,
+          "type": "image/svg+xml"
+        },
+        "check.svg": {
+          "name": "check.svg",
+          "blob": "25318da6eb9a2567093163b5995a8cb9",
+          "size": 453,
+          "type": "image/svg+xml"
+        },
+        "cross.svg": {
+          "name": "cross.svg",
+          "blob": "93ade2ba15427e1ff218750806f086b6",
+          "size": 545,
+          "type": "image/svg+xml"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "lastChange": {
+    "by": "wouerner",
+    "at": "2026-11-12T17:40:00Z",
+    "via": "Claude Code",
+    "note": "Ficha do candidato com monstrinho original gerado a partir do codinome (creatures.ts)"
+  }
+}

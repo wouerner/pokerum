@@ -1,0 +1,10 @@
+backend/target/
+*.db
+*.db-shm
+*.db-wal
+web/node_modules/
+web/dist/
+
+# segredos e configurações locais
+.env
+.claude/settings.local.json

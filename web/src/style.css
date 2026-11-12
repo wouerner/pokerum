@@ -1,0 +1,595 @@
+/*
+ * Pokerum — "Cozy Pixel GB". Regras normativas: docs/design/REGRAS.md.
+ * Paleta mantida; só os tokens de acessibilidade (§2/§10) foram ajustados.
+ */
+:root {
+  /* grade (§3.1) */
+  --px: 2px;
+
+  /* rampa de tela + superfícies (§2.1) */
+  --bg: #f6f1e7;
+  --bg-dots: #e6dfcf;
+  --surface: #fffdf8;
+  --surface-2: #f1ebdd;
+  --ink: #1b1a22;
+  --ink-2: #55525f;
+  --ink-3: #6e6a79; /* era #8a8695 (3,2:1) */
+  --line: #1b1a22;
+  --line-soft: #d9d1c0;
+
+  /* acento (§2.2) */
+  --accent: #e5432f; /* só preenchimentos */
+  --accent-strong: #cc3621; /* botão primário / texto vermelho */
+  --accent-ink: #ffffff; /* texto sobre --accent-strong */
+  --accent-2: #2f5be5; /* só links */
+
+  /* status de nota (§2.3) */
+  --score-low: #d93a2b;
+  --score-mid: #e09a12;
+  --score-high: #1f9d55;
+  --score-low-text: #b42d20;
+  --score-mid-text: #8a5a00;
+  --score-high-text: #17733f;
+  --score-low-bg: #fbe1dd;
+  --score-mid-bg: #fbefd2;
+  --score-high-bg: #d9f2e3;
+  --glow: #ffe4a8;
+
+  /* molduras e profundidade (§3) */
+  --frame: var(--line); /* janelas */
+  --frame-strong: var(--line); /* controles (botões, inputs) */
+  --shadow-color: var(--line);
+  --shadow: calc(var(--px) * 4) calc(var(--px) * 4) 0 var(--shadow-color);
+  --shadow-sm: calc(var(--px) * 2) calc(var(--px) * 2) 0 var(--shadow-color);
+  --radius: 0;
+  --radius-sm: 0;
+
+  /* tipografia (§4) */
+  --font: 'Nunito', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Pixelify Sans', var(--font);
+  --font-num: 'Fredoka', var(--font); /* números: notas, posições, contagens (§4) */
+  --font-label: 'Silkscreen', var(--font);
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* movimento (§7) */
+  --step-fast: 100ms;
+  --step-mid: 200ms;
+  --step-slow: 400ms;
+
+  --type-l: 52%;
+  --type-bg-l: 92%;
+  --type-text-l: 26%;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14131b;
+    --bg-dots: #22202d;
+    --surface: #1d1c27;
+    --surface-2: #272535;
+    --ink: #f2eee6;
+    --ink-2: #b9b4c4;
+    --ink-3: #958fa3; /* era #7f7a8c (4,1:1 na superfície) */
+    --line: #000000;
+    --line-soft: #34313f;
+    --accent: #ff5c47;
+    --accent-strong: #ff5c47; /* no escuro o acento já passa como texto (6,0:1) */
+    --accent-ink: #14131b;
+    --accent-2: #6f8dff;
+    --score-low: #ff6b5c;
+    --score-mid: #f4b53f;
+    --score-high: #3fcf7f;
+    --score-low-text: var(--score-low);
+    --score-mid-text: var(--score-mid);
+    --score-high-text: var(--score-high);
+    --score-low-bg: #3a1d1c;
+    --score-mid-bg: #3a2e14;
+    --score-high-bg: #15331f;
+    --frame: var(--line-soft);
+    --frame-strong: var(--ink-3);
+    --shadow-color: #000000;
+    --type-l: 66%;
+    --type-bg-l: 20%;
+    --type-text-l: 78%;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  /* "dithering": pontos quadrados de 2px numa grade de 16px (§6) */
+  background-image: conic-gradient(from 270deg at var(--px) var(--px), var(--bg-dots) 25%, transparent 0);
+  background-size: 16px 16px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---- tipografia (§4) ---- */
+h1,
+h2,
+.display {
+  font-family: var(--font-display);
+  font-synthesis: none;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+h1 {
+  font-size: 48px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+/* h3 = títulos de card/vaga: conteúdo digitado, várias linhas → Nunito (§4 dosagem) */
+h3 {
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 32px;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.stack > * + * {
+  margin-top: 20px;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+/* corpo nunca abaixo de 16px (§8) */
+.small {
+  font-size: 16px;
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.label,
+.eyebrow {
+  /* rótulo pequeno: Nunito 800 em caixa alta (§4). A fonte pixel fica para o que é grande e curto. */
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* "sotaque" de jogo: Silkscreen só a partir de 16px, até ~3 palavras (§4) */
+.tag-px {
+  font-family: var(--font-label);
+  font-synthesis: none;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  color: var(--ink-3);
+  margin: 0;
+}
+
+.num {
+  font-family: var(--font-num);
+  font-synthesis: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- moldura pixel (§3.2 / §5.1) ----
+ * Borda de 2 unidades feita com box-shadow nos 4 lados (o canto fica "mordido")
+ * + sombra deslocada sem desfoque. Ajuste por variáveis: --fc (cor), --sh (sombra).
+ * :where() mantém especificidade zero para os componentes sobrescreverem.
+ */
+:where(.px-frame, .card, .btn, input[type='text'], select, textarea) {
+  --b: calc(var(--px) * 2);
+  --fc: var(--frame);
+  --sh: calc(var(--px) * 2);
+  --shc: var(--shadow-color);
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    0 calc(var(--b) * -1) 0 0 var(--fc),
+    0 var(--b) 0 0 var(--fc),
+    calc(var(--b) * -1) 0 0 0 var(--fc),
+    var(--b) 0 0 0 var(--fc),
+    calc(var(--b) + var(--sh)) calc(var(--b) + var(--sh)) 0 0 var(--shc);
+}
+
+.card {
+  background: var(--surface);
+  padding: 16px;
+}
+
+@media (min-width: 600px) {
+  .card {
+    padding: 20px;
+  }
+}
+
+/* ---- cursor ▶ de menu (§5.3) ---- */
+.pi {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask: var(--pi) center / 16px 16px no-repeat;
+  mask: var(--pi) center / 16px 16px no-repeat;
+  vertical-align: -2px;
+}
+.pi-cursor {
+  --pi: url('./assets/px/cursor.svg');
+}
+.pi-down {
+  --pi: url('./assets/px/down.svg');
+}
+.pi-check {
+  --pi: url('./assets/px/check.svg');
+}
+.pi-cross {
+  --pi: url('./assets/px/cross.svg');
+}
+
+.menu-item .cur {
+  visibility: hidden;
+}
+.menu-item:hover .cur,
+.menu-item:focus-visible .cur,
+.menu-item:has(:focus-visible) .cur,
+.menu-item[aria-current='page'] .cur,
+.menu-item[aria-selected='true'] .cur,
+.menu-item.is-active .cur {
+  visibility: visible;
+}
+.menu-item:focus-visible .cur,
+.menu-item:has(:focus-visible) .cur,
+.menu-item[aria-current='page'] .cur,
+.menu-item[aria-selected='true'] .cur {
+  animation: px-blink 1s steps(2, start) infinite;
+}
+
+.blink {
+  animation: px-blink 1s steps(2, start) infinite;
+}
+
+@keyframes px-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* ---- botões (§5.7) ---- */
+.btn {
+  --fc: var(--frame-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  font-family: var(--font-label);
+  font-synthesis: none;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform var(--step-fast) steps(2),
+    box-shadow var(--step-fast) steps(2);
+}
+
+.btn:hover {
+  --sh: calc(var(--px) * 3);
+  transform: translate(calc(var(--px) * -1), calc(var(--px) * -1));
+}
+
+.btn:active {
+  --sh: 0px;
+  transform: translate(calc(var(--px) * 2), calc(var(--px) * 2));
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  --sh: calc(var(--px) * 2);
+}
+
+.btn-primary {
+  --fc: var(--line);
+  background: var(--accent-strong);
+  color: var(--accent-ink);
+}
+
+.btn-danger {
+  background: var(--score-low-bg);
+  color: var(--score-low-text);
+}
+
+.btn-ghost {
+  background: transparent;
+  box-shadow: none;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.btn-ghost:hover,
+.btn-ghost:active {
+  box-shadow: none;
+  transform: none;
+  text-decoration: underline;
+  text-decoration-thickness: var(--px);
+  text-underline-offset: 4px;
+}
+
+.btn.small {
+  /* Silkscreen em 12px é ilegível: botão pequeno usa o rótulo em Nunito (§4) */
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+}
+
+.btn-lg {
+  min-height: 52px;
+  padding: 14px 24px;
+}
+
+/* ---- foco (§8) ---- */
+:focus-visible {
+  outline: calc(var(--px) * 2) dashed var(--ink);
+  outline-offset: calc(var(--px) * 2);
+}
+
+:where(.px-frame, .card, .btn:not(.btn-ghost), input[type='text'], select, textarea):focus-visible {
+  outline-offset: calc(var(--px) * 4);
+}
+
+/* ---- formulários (§5.9) ---- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.field label .muted {
+  font-size: inherit;
+}
+
+.field .hint {
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+input[type='text'],
+select,
+textarea {
+  --fc: var(--frame-strong);
+  --sh: 0px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--surface);
+  min-height: 44px;
+  padding: 10px 12px;
+  width: 100%;
+  margin: 4px 0;
+}
+
+input.mono {
+  font-family: var(--mono);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+input[type='text']:focus,
+select:focus,
+textarea:focus {
+  --sh: calc(var(--px) * 2);
+}
+
+.select-wrap {
+  position: relative;
+  color: var(--ink);
+}
+
+.select-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  background-color: currentColor;
+  -webkit-mask: url('./assets/px/down.svg') center / 16px 16px no-repeat;
+  mask: url('./assets/px/down.svg') center / 16px 16px no-repeat;
+  pointer-events: none;
+}
+
+/* ---- estados ---- */
+.alert {
+  border: var(--px) solid var(--score-low-text);
+  background: var(--score-low-bg);
+  color: var(--score-low-text);
+  padding: 12px 14px;
+  font-weight: 600;
+}
+
+/* indicador de carregamento (§7): grade 2×2 de pixels que acende em sequência
+   (horário), em quadros. Referência: "pixel-grid loader" (Recent/Godly). */
+.spinner {
+  --q: 8px;
+  --on: var(--accent);
+  --off: var(--line-soft);
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex: none;
+  background-repeat: no-repeat;
+  background-size: var(--q) var(--q);
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  background-image:
+    linear-gradient(var(--on), var(--on)), linear-gradient(var(--off), var(--off)),
+    linear-gradient(var(--off), var(--off)), linear-gradient(var(--off), var(--off));
+  animation: px-load 0.8s steps(1, end) infinite;
+}
+
+@keyframes px-load {
+  0% {
+    background-image:
+      linear-gradient(var(--on), var(--on)), linear-gradient(var(--off), var(--off)),
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--off), var(--off));
+  }
+  25% {
+    background-image:
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--on), var(--on)),
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--off), var(--off));
+  }
+  50% {
+    background-image:
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--off), var(--off)),
+      linear-gradient(var(--on), var(--on)), linear-gradient(var(--off), var(--off));
+  }
+  75% {
+    background-image:
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--off), var(--off)),
+      linear-gradient(var(--off), var(--off)), linear-gradient(var(--on), var(--on));
+  }
+}
+
+/* entrada de janela em 3 quadros (§7) */
+@keyframes px-enter {
+  from {
+    transform: scale(0.96);
+  }
+}
+
+.page {
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.back:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: var(--px);
+}
+
+.link {
+  color: var(--accent-2);
+  font-weight: 700;
+  text-decoration-thickness: var(--px);
+  text-underline-offset: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
