@@ -57,6 +57,20 @@ Coolify (ou pela API).
 - Novo motor de avaliação inline faz backfill sozinho no start; motores com custo (LLM/API) só
   com `backfill` explícito (`backend/api/src/engines/README.md`).
 
+## Google Analytics
+
+Defina `POKERUM_GA_ID=G-XXXXXXXXXX` em *Environment Variables* no Coolify e faça redeploy (não
+precisa rebuild: a tag é injetada pelo servidor no `index.html`). Vazio desliga.
+
+- **LGPD (Consent Mode):** o consentimento padrão é negado. O site mostra um aviso de cookies
+  (`ConsentBar`); só com "Aceitar" o GA grava cookies. Sem aceite, o GA recebe apenas sinais
+  anônimos (modelagem de conversões). A escolha fica em `localStorage["pokerum-ga-consent"]` e pode
+  ser revista pelo link "Cookies" no rodapé.
+- **Rotas do Vue:** o GA4 conta as trocas de página do SPA pela medição otimizada (*Enhanced
+  measurement → Page changes based on browser history events*, ligada por padrão no fluxo da web).
+- **Conferir:** `curl -s https://pokerum.wouerner.dev/ | grep -o 'gtag/js?id=[^"]*'` e o relatório
+  *Tempo real* do GA com o aviso aceito.
+
 ## Operação
 
 Pelo terminal do serviço `app` no Coolify:

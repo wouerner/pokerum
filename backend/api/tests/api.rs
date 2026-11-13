@@ -320,3 +320,38 @@ async fn job_list_includes_top3() {
     }
     assert!(top[0]["score"].as_f64().unwrap() >= top[2]["score"].as_f64().unwrap());
 }
+
+/// SPA com e sem Google Analytics: a tag só aparece com ID, em `/`, `/index.html` e no fallback
+/// de rota do Vue; os demais arquivos saem do disco sem mudança.
+#[tokio::test]
+async fn spa_injects_analytics_only_when_configured() {
+    let dir = std::env::temp_dir().join(format!("pokerum-dist-{}", std::process::id()));
+    std::fs::create_dir_all(dir.join("assets")).unwrap();
+    std::fs::write(
+        dir.join("index.html"),
+        "<html><head><title>P</title></head><body></body></html>",
+    )
+    .unwrap();
+    std::fs::write(dir.join("assets/app.js"), "console.log(1)").unwrap();
+
+    let plain = pokerum_api::with_static(app().await, &dir, None);
+    let (s, v) = send(&plain, get("/vagas/qualquer")).await;
+    assert_eq!(s, StatusCode::OK);
+    assert!(!v.as_str().unwrap().contains("gtag"));
+
+    let ga = pokerum_api::with_static(app().await, &dir, Some("G-TEST1234"));
+    for uri in ["/", "/index.html", "/vagas/qualquer"] {
+        let (s, v) = send(&ga, get(uri)).await;
+        assert_eq!(s, StatusCode::OK, "{uri}");
+        let html = v.as_str().unwrap();
+        assert!(html.contains("gtag/js?id=G-TEST1234"), "{uri}");
+        assert!(html.find("gtag/js").unwrap() < html.find("</head>").unwrap());
+    }
+    let (s, v) = send(&ga, get("/assets/app.js")).await;
+    assert_eq!(s, StatusCode::OK);
+    assert_eq!(v.as_str().unwrap(), "console.log(1)");
+    let (s, _) = send(&ga, get("/api/health")).await;
+    assert_eq!(s, StatusCode::OK);
+
+    std::fs::remove_dir_all(&dir).ok();
+}

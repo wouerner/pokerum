@@ -2,6 +2,8 @@
 import { RouterLink, RouterView } from 'vue-router'
 import PixelArt from './components/PixelArt.vue'
 import { BRAND_MARK } from './pixelart'
+import ConsentBar from './components/ConsentBar.vue'
+import { analyticsEnabled, reopenConsent } from './analytics'
 </script>
 
 <template>
@@ -27,8 +29,12 @@ import { BRAND_MARK } from './pixelart'
     <div class="container muted">
       Pokerum simula como motores ATS com IA pontuariam seu currículo. Ranking público e anônimo —
       nenhum dado pessoal é exibido e o texto original não é salvo.
+      <button v-if="analyticsEnabled" type="button" class="link cookie-link" @click="reopenConsent">
+        Cookies
+      </button>
     </div>
   </footer>
+  <ConsentBar />
 </template>
 
 <style scoped>
@@ -89,6 +95,18 @@ import { BRAND_MARK } from './pixelart'
 .footer {
   padding: 24px 0 40px;
   border-top: var(--px) dashed var(--line-soft);
+}
+.cookie-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
 }
 @media (max-width: 420px) {
   .nav-link {

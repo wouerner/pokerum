@@ -18,6 +18,8 @@ services:
       POKERUM_SEED: ${POKERUM_SEED:-0}
       # vazio = sem CORS (site e API na mesma origem); "*" ou lista de origens separadas por vírgula
       POKERUM_CORS_ORIGINS: ${POKERUM_CORS_ORIGINS:-}
+      # Google Analytics 4 (G-XXXXXXXXXX); vazio = desligado. Muda sem rebuild (só redeploy)
+      POKERUM_GA_ID: ${POKERUM_GA_ID:-}
       # avaliações em segundo plano (motores LLM/API, quando existirem)
       POKERUM_ENGINE_CONCURRENCY: ${POKERUM_ENGINE_CONCURRENCY:-4}
       POKERUM_QUEUE_POLL_SECS: ${POKERUM_QUEUE_POLL_SECS:-15}

@@ -74,7 +74,11 @@ async fn main() -> anyhow::Result<()> {
     match resolve_web_dist() {
         Some(dist) => {
             tracing::info!(dir = %dist.display(), "servindo SPA estático");
-            app = pokerum_api::with_static(app, &dist);
+            let ga_id = pokerum_api::analytics::ga_id_from_env();
+            if let Some(id) = &ga_id {
+                tracing::info!(id, "Google Analytics ligado (Consent Mode)");
+            }
+            app = pokerum_api::with_static(app, &dist, ga_id.as_deref());
         }
         None => tracing::info!("web/dist não encontrado; servindo apenas /api"),
     }

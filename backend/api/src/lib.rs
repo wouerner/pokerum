@@ -1,5 +1,6 @@
 //! Pokerum API: axum + sqlx (SQLite) sobre `pokerum_core`.
 
+pub mod analytics;
 pub mod db;
 pub mod engines;
 pub mod error;
@@ -10,9 +11,15 @@ pub mod seed;
 pub mod service;
 pub mod slug;
 
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
-use axum::{extract::DefaultBodyLimit, Router};
+use axum::{
+    extract::DefaultBodyLimit,
+    handler::HandlerWithoutStateExt,
+    http::header,
+    routing::get,
+    Router,
+};
 use sqlx::SqlitePool;
 use tower_http::{
     cors::CorsLayer,
@@ -90,8 +97,38 @@ fn cors_layer(spec: Option<&str>) -> Option<CorsLayer> {
 }
 
 /// Adiciona o serviço de arquivos estáticos do SPA (com fallback para index.html).
-pub fn with_static(app: Router, dist: &Path) -> Router {
+/// Com `ga_id`, o index.html é servido da memória com a tag do Google Analytics no `<head>`.
+pub fn with_static(app: Router, dist: &Path, ga_id: Option<&str>) -> Router {
     let index = dist.join("index.html");
-    let serve = ServeDir::new(dist).fallback(ServeFile::new(index));
-    app.fallback_service(serve)
+    let html = ga_id.and_then(|id| match std::fs::read_to_string(&index) {
+        Ok(html) => Some(analytics::inject(&html, id)),
+        Err(e) => {
+            tracing::warn!(error = %e, "não li o index.html; analytics desligado");
+            None
+        }
+    });
+    let Some(html) = html else {
+        let serve = ServeDir::new(dist).fallback(ServeFile::new(index));
+        return app.fallback_service(serve);
+    };
+
+    let html: Arc<str> = html.into();
+    let page = move || {
+        let html = html.clone();
+        async move {
+            (
+                [
+                    (header::CONTENT_TYPE, "text/html; charset=utf-8"),
+                    (header::CACHE_CONTROL, "no-cache"),
+                ],
+                html.to_string(),
+            )
+        }
+    };
+    let serve = ServeDir::new(dist)
+        .append_index_html_on_directories(false)
+        .fallback(page.clone().into_service());
+    app.route("/", get(page.clone()))
+        .route("/index.html", get(page))
+        .fallback_service(serve)
 }

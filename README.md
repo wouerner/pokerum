@@ -87,6 +87,10 @@ Publicado em **https://pokerum.wouerner.dev** pelo Coolify, com o build pack Doc
 volume `pokerum-data`). Passo a passo, DNS na Cloudflare, backup e conferência em
 [docs/deploy.md](docs/deploy.md). Variáveis em `.env.example`.
 
+**Google Analytics:** com `POKERUM_GA_ID=G-XXXXXXXXXX` o servidor injeta a tag do GA4 no
+`index.html`, com aviso de cookies (LGPD, Consent Mode): sem aceite, o GA não grava cookies.
+Detalhes em [docs/deploy.md](docs/deploy.md#google-analytics).
+
 ## Migrations
 
 Ficam em `backend/api/migrations/NNNN_descricao.sql` e rodam no start da API.
